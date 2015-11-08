@@ -3,6 +3,7 @@ from numpy.random import randn
 import random
 
 def heaviside(x): return (1 if x >= 0 else 0)
+def sigmoid(x): return 1 / (1 + math.exp(-x))
 
 class MLP:
 
@@ -15,6 +16,9 @@ class MLP:
 
 
 	def __call__(self, inputs):
+		self.estimate(inputs)
+
+	def estimate(self, inputs):
 		x_l = inputs
 
 		# Iterates over layers
@@ -30,7 +34,12 @@ class MLP:
 			x_l = y_l
 		return y_l
 
-	def train(self, labels, inputs):
-		
+	def train(self, labels, training_samples, m):
+		cost = []
+		for idx, sample from enumerate(training_samples):
+			y = self.estimate(sample)
+			cost.append()
+
+
 
 
