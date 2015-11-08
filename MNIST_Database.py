@@ -26,11 +26,28 @@ class MNIST_Database:
 			self.train_images = [[row[l*28+1:(l+1)*28+1] for l in range(28)] for row in temp]
 			self.train_labels = temp[:,0]
 			data.close()
+			
+	def image(self, index, setname, flat=False):
+		img = 0;
+		if setname == 'test':		
+			img = self.test_images[index]
+		elif setname == 'train':
+			img = self.train_images[index]
+		
+		if flat:
+			return np.reshape(img, -1)
+		return img
+	
+	def label(self, index, setname):
+		if setname == 'test':		
+			return self.test_labels[index]
+		elif setname == 'train':
+			return self.train_labels[index]
 
 sets = MNIST_Database()
 
 for _ in range(5):
 	idx = randint(0, 9000)
-	print(sets.test_labels[idx])
-	plt.imshow(sets.test_images[idx], cmap=plt.cm.gray_r, interpolation='nearest')
+	print(sets.label(idx, 'train'))
+	plt.imshow(sets.image(idx, 'train'), cmap=plt.cm.gray_r, interpolation='nearest')
 	plt.show()
