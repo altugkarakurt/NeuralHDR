@@ -6,33 +6,45 @@ from random import randint
 from zipfile import ZipFile
 import io
 
-class MNIST_Database:
-	def __init__(self):
-		with ZipFile('./Data/Digit.zip') as data_zip:
-			data = data_zip.open('testDigit.csv')
-			data = io.TextIOWrapper(data)
-			reader = csv.reader(data)
+def readData():
+	with ZipFile('./Data/Digit.zip') as data_zip:
+		data = data_zip.open('testDigit.csv')
+		data = io.TextIOWrapper(data)
+		reader = csv.reader(data)
+	
+		temp = np.array([[int(row[i]) for i in range(785)] for row in reader])
+		test_images = [[row[l*28+1:(l+1)*28+1] for l in range(28)] for row in temp]
+		test_labels = temp[:,0]
+		data.close()
+		
+		data = data_zip.open('trainDigit.csv')
+		data = io.TextIOWrapper(data)
+		reader = csv.reader(data)
+		
+		temp = np.array([[int(row[i]) for i in range(785)] for row in reader])
+		train_images = [[row[l*28+1:(l+1)*28+1] for l in range(28)] for row in temp]
+		train_labels = temp[:,0]
+		data.close()
+		
+	return (train_labels, train_images, test_labels, test_images)
 
-			temp = np.array([[int(row[i]) for i in range(785)] for row in reader])
-			self.test_images = [[row[l*28+1:(l+1)*28+1] for l in range(28)] for row in temp]
-			self.test_labels = temp[:,0]
-			data.close()
-			
-			data = data_zip.open('trainDigit.csv')
-			data = io.TextIOWrapper(data)
-			reader = csv.reader(data)
-			
-			temp = np.array([[int(row[i]) for i in range(785)] for row in reader])
-			self.train_images = [[row[l*28+1:(l+1)*28+1] for l in range(28)] for row in temp]
-			self.train_labels = temp[:,0]
-			data.close()
-			
-	def image(self, index, setname, flat=False, normalize=False):
+
+class MNIST_Database:
+	(train_labels, train_images, test_labels, test_images) = readData()
+	
+	@staticmethod
+	def get(index, setname, flat=False, normalize=False, decode=False):
+		img = MNIST_Database.image(index, setname, flat=flat, normalize=normalize)
+		lbl = MNIST_Database.label(index, setname, decode=decode)
+		return (lbl, img)
+	
+	@staticmethod
+	def image(index, setname, flat=False, normalize=False):
 		img = 0;
 		if setname == 'test':		
-			img = self.test_images[index]
+			img = test_images[index]
 		elif setname == 'train':
-			img = self.train_images[index]
+			img = train_images[index]
 		
 		if flat:
 			img = np.reshape(img, -1)
@@ -42,20 +54,20 @@ class MNIST_Database:
 			
 		return img
 		
-	
-	def label(self, index, setname, decode=False):
+	@staticmethod
+	def label(index, setname, decode=False):
 		lbl = -1;
 		if setname == 'test':		
-			lbl = self.test_labels[index]
+			lbl = test_labels[index]
 		elif setname == 'train':
-			lbl = self.train_labels[index]
+			lbl = train_labels[index]
 		
 		if decode:
 			declbl = np.zeros((10))
 			declbl[lbl] = 1
 			lbl = declbl
 			
-		return lbl			
+		return lbl
 
 """
 sets = MNIST_Database()
