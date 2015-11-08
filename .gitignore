@@ -1,1 +1,4 @@
 *.pyc
+Data/testDigit.csv
+Data/trainDigit.csv
+Data/Description.txt
