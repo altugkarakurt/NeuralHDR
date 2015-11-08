@@ -1,7 +1,6 @@
 import numpy as np
 from numpy.random import randn
 import random
-from numpy import sign as signum
 
 def heaviside(x): return (1 if x >= 0 else 0)
 
@@ -31,4 +30,7 @@ class MLP:
 			x_l = y_l
 		return y_l
 
-	
+	def train(self, labels, inputs):
+		
+
+
