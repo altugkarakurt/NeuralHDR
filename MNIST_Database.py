@@ -42,9 +42,9 @@ class MNIST_Database:
 	def image(index, setname, flat=False, normalize=False):
 		img = 0;
 		if setname == 'test':		
-			img = test_images[index]
+			img = MNIST_Database.test_images[index]
 		elif setname == 'train':
-			img = train_images[index]
+			img = MNIST_Database.train_images[index]
 		
 		if flat:
 			img = np.reshape(img, -1)
@@ -52,22 +52,22 @@ class MNIST_Database:
 		if normalize:
 			img = img / np.max(img)
 			
-		return img
+		return np.array(img)
 		
 	@staticmethod
 	def label(index, setname, decode=False):
 		lbl = -1;
 		if setname == 'test':		
-			lbl = test_labels[index]
+			lbl = MNIST_Database.test_labels[index]
 		elif setname == 'train':
-			lbl = train_labels[index]
+			lbl = MNIST_Database.train_labels[index]
 		
 		if decode:
 			declbl = np.zeros((10))
 			declbl[lbl] = 1
 			lbl = declbl
 			
-		return lbl
+		return np.array(lbl)
 
 """
 sets = MNIST_Database()
