@@ -33,21 +33,21 @@ class MNIST_Database:
 	(train_labels, train_images, test_labels, test_images) = readData()
 	
 	@staticmethod
-	def get(index, setname, flat=False, normalize=False, decode=False):
-		img = MNIST_Database.image(index, setname, flat=flat, normalize=normalize)
-		lbl = MNIST_Database.label(index, setname, decode=decode)
+	def get(*index, setname=None, flat=False, normalize=False, decode=False):
+		img = MNIST_Database.image(*index, setname=setname, flat=flat, normalize=normalize)
+		lbl = MNIST_Database.label(*index, setname=setname, decode=decode)
 		return (lbl, img)
 	
 	@staticmethod
-	def image(index, setname, flat=False, normalize=False):
-		img = 0;
+	def image(*index, setname=None, flat=False, normalize=False):
 		if setname == 'test':		
-			img = MNIST_Database.test_images[index]
+			img = [MNIST_Database.test_images[ind] for ind in index]
 		elif setname == 'train':
-			img = MNIST_Database.train_images[index]
-		
+			img = [MNIST_Database.train_images[ind] for ind in index]
+		else:
+			img = None
 		if flat:
-			img = np.reshape(img, -1)
+			img = np.reshape(img, [len(index), -1])
 		
 		if normalize:
 			img = img / np.max(img)
@@ -55,12 +55,13 @@ class MNIST_Database:
 		return np.array(img)
 		
 	@staticmethod
-	def label(index, setname, decode=False):
-		lbl = -1;
-		if setname == 'test':		
-			lbl = MNIST_Database.test_labels[index]
+	def label(*index, setname=None, decode=False):
+		if setname == 'test':
+			lbl = [MNIST_Database.test_labels[ind] for ind in index]
 		elif setname == 'train':
-			lbl = MNIST_Database.train_labels[index]
+			lbl = [MNIST_Database.train_labels[ind] for ind in index]
+		else:
+			lbl = None
 		
 		if decode:
 			declbl = np.zeros((10))
