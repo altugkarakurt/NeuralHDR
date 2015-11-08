@@ -44,6 +44,7 @@ class MNIST_Database:
 		elif setname == 'train':
 			return self.train_labels[index]
 
+"""
 sets = MNIST_Database()
 
 for _ in range(5):
@@ -51,3 +52,4 @@ for _ in range(5):
 	print(sets.label(idx, 'train'))
 	plt.imshow(sets.image(idx, 'train'), cmap=plt.cm.gray_r, interpolation='nearest')
 	plt.show()
+"""
