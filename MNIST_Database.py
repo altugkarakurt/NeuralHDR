@@ -69,13 +69,3 @@ class MNIST_Database:
 			lbl = declbl
 			
 		return np.array(lbl)
-
-"""
-sets = MNIST_Database()
-
-for _ in range(5):
-	idx = randint(0, 9000)
-	print(sets.label(idx, 'train'))
-	plt.imshow(sets.image(idx, 'train'), cmap=plt.cm.gray_r, interpolation='nearest')
-	plt.show()
-"""
