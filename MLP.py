@@ -37,6 +37,7 @@ class MLP:
 				cur_weights = self.weights[l][i] + self.biases[l][i]
 				bias_x = [1]
 				x_l = bias_x.extend(x_l)
+				pdb.set_trace()
 				local_field = np.dot(self.weights[l][i], x_l) + self.biases[l]
 				y_l[i] = self.activation_function(local_field)
 
@@ -63,11 +64,11 @@ class MLP:
 
 		for data, label in mini_batch:
 			delta_grad_b, delta_grad_w = self.back_propagation(data, label)
-			grad_b = [nb+dnb for nb, dnb in list(zip(grad_b, delta_grad_b)])
-			grad_w = [nw+dnw for nw, dnw in list(zip(grad_w, delta_grad_w)])
+			grad_b = [nb+dnb for nb, dnb in list(zip(grad_b, delta_grad_b))]
+			grad_w = [nw+dnw for nw, dnw in list(zip(grad_w, delta_grad_w))]
 
-		self.weights = [w-(eta/len(mini_batch)) * nw for w, nw in list(zip(self.weights, grad_w)])
-		self.biases = [b-(eta/len(mini_batch)) * nb for b, nb in list(zip(self.biases, grad_b)])
+		self.weights = [w-(eta/len(mini_batch)) * nw for w, nw in list(zip(self.weights, grad_w))]
+		self.biases = [b-(eta/len(mini_batch)) * nb for b, nb in list(zip(self.biases, grad_b))]
 
 	def back_propagation(self, data, label):
 		grad_b = [np.zeros(b.shape) for b in self.biases]
@@ -78,7 +79,8 @@ class MLP:
 		activations = [data] # list to store all the activations, layer by layer
 		zs = [] # list to store all the z vectors, layer by layer
 		for b, w in list(zip(self.biases, self.weights)):
-			z = np.dot(w, activation) + b
+			pdb.set_trace()
+			z = [np.dot(w[i], activation) + b[i] for i, _ in enumerate(b)]
 			zs.append(z)
 			activation = sigmoid(z)
 			activations.append(activation)
