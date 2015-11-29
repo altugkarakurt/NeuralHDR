@@ -1,15 +1,14 @@
 import numpy as np
 import random
-import pdb
 
 from numpy.random import randn
 from random import shuffle
 
 def heaviside(x): return (1 if x >= 0 else 0)
 def d_heaviside(x): return (1 if x == 0 else 0)
+
 def sigmoid(x): return 1 / (1 + np.exp(-x))
 def d_sigmoid(x): return sigmoid(x) * (1 - sigmoid(x))
-
 
 class MLP:
 
@@ -27,19 +26,22 @@ class MLP:
 		return self.estimate(network_input)
 
 	def estimate(self, network_input):
-		# consider the input as output of the -1st layer
-		layer_output = np.array(network_input)
+		return self.feed_forward(network_input)[-1]
+	
+	def feed_forward(self, network_input):
+		# consider the input as output of the 0th layer
+		layer_outputs = np.array([np.zeros(size) for size in self.sizes])
 		
 		for layer, layer_size in enumerate(self.sizes):
 			# [1] is the "bias neuron"
-			layer_input = np.concatenate(([1], layer_output))
-			layer_output = np.zeros(layer_size)
+			layer_input = np.concatenate(([1], layer_outputs[layer-1])) if layer != 0 \
+				else np.concatenate(([1], np.array(network_input)))
 			
 			for neuron in range(layer_size):
 				local_field = layer_input @ self.weights[layer][neuron]
-				layer_output[neuron] = self.activation_function(local_field)
+				layer_outputs[layer][neuron] = self.activation_function(local_field)
 		
-		return layer_output
+		return layer_outputs
 
 
 	def train(self, data, labels, epochs, block_size, learn_rate):
