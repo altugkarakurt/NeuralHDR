@@ -56,7 +56,14 @@ class MLP:
 
 
 	def train_block(self, block, learn_rate):
-		raise NotImplementedError
+		gradient = np.array([np.zeros_like(w) for w in self.weights])
+		
+		for data, label in block:
+			gradient += self.back_propagation(data, label)
+		
+		# gradient /= len(block)
+		self.weights -= learn_rate * gradient
+
 
 	def back_propagation(self, data, label):
 		raise NotImplementedError
