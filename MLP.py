@@ -41,10 +41,21 @@ class MLP:
 		
 		return layer_output
 
-	def train(self, labels, samples, epochs, m, eta):
-		raise NotImplementedError
 
-	def train_mini_batch(self, mini_batch, eta):
+	def train(self, data, labels, epochs, block_size, learn_rate):
+		training_data = list(zip(data, np.array(labels)))
+		training_size = len(training_data)
+		
+		for epoch in range(epochs):
+			shuffle(training_data)
+			blocks = [training_data[k:k+block_size] for k in range(0, training_size, block_size)]
+			
+			for block_idx, block in enumerate(blocks):
+				self.train_block(block, learn_rate)
+				print("Block %d/%d of Epoch %d complete.\n" % (block_idx + 1, len(blocks), epoch + 1))
+
+
+	def train_block(self, block, learn_rate):
 		raise NotImplementedError
 
 	def back_propagation(self, data, label):
