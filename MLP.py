@@ -3,12 +3,18 @@ import random
 
 from numpy.random import randn
 from random import shuffle
+from math import log as ln
 
 def heaviside(x): return (1 if x >= 0 else 0)
 def d_heaviside(x): return (1 if x == 0 else 0)
 
 def sigmoid(x): return 1 / (1 + np.exp(-x))
 def d_sigmoid(x): return sigmoid(x) * (1 - sigmoid(x))
+
+def MSE(y, y_est): return ((y - y_est) ** 2) / 2
+def d_MSE(y, y_est): return -(y - y_est)
+	
+def cross_entropy(y, y_est): return (y * ln(y_est) + (1 - y) * ln(1 - y_est)) / 2
 
 class MLP:
 
@@ -26,7 +32,7 @@ class MLP:
 		return self.estimate(network_input)
 
 	def estimate(self, network_input):
-		return self.feed_forward(network_input)[0][-1]
+		return self.feed_forward(network_input)[0][-1][0]
 	
 	def feed_forward(self, network_input):
 		# consider the input as output of the 0th layer
@@ -46,7 +52,8 @@ class MLP:
 
 
 	def train(self, data, labels, epochs, block_size, learn_rate):
-		training_data = list(zip(data, np.array(labels)))
+		data = [np.array(datum) for datum in data]
+		training_data = list(zip(data, labels))
 		training_size = len(training_data)
 		
 		for epoch in range(epochs):
@@ -69,5 +76,15 @@ class MLP:
 
 
 	def back_propagation(self, data, label):
-		raise NotImplementedError
+		(layer_outputs, local_fields) = self.feed_forward(data)
+		layer_outputs = [np.concatenate(([1],layer_output)) for layer_output in layer_outputs]
+		network_output = self.estimate(data)
+		layer_inputs = [np.concatenate(([1], data))] + layer_outputs[:-1]
+		
+		d_error = d_MSE(label, network_output)
+		d_outputs = [self.d_activation_function(local_field) for local_field in local_fields]
+		d_fields = layer_inputs
+
+		return [np.multiply(*np.meshgrid(local_fields[layer], layer_inputs[layer])).T \
+			for layer, neurons in enumerate(self.sizes)]
 	
