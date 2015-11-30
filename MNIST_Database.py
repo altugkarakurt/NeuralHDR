@@ -73,8 +73,9 @@ class MNIST_Database:
 			raise ValueError('Not a valid set name')
 		
 		if decode:
-			declbl = np.zeros((10))
-			declbl[lbl] = 1
+			declbl = np.zeros([len(index), 10])
+			for idx, lblx in enumerate(lbl):
+				declbl[idx][lblx] = 1
 			lbl = declbl
 			
 		return np.array(lbl)
