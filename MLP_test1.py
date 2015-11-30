@@ -2,10 +2,10 @@ from MNIST_Database import MNIST_Database as MNIST
 import numpy as np
 from MLP import MLP
 
-train_labels = [MNIST.label(i, setname='train', decode=True) for i in range(60000)]
-train_samples = [MNIST.image(i, setname='train', flat=True, normalize=True)[0] for i in range(60000)]
-test_labels = [MNIST.label(i, setname='test', decode=True) for i in range(9000)]
-test_samples = [MNIST.image(i, setname='test', flat=True, normalize=True)[0] for i in range(9000)]
+train_labels = MNIST.label(*range(60000), setname='train', decode=True)
+train_samples = MNIST.image(*range(60000), setname='train', flat=True, normalize=True)
+test_labels = MNIST.label(*range(9000), setname='test', decode=True)
+test_samples = MNIST.image(*range(9000), setname='test', flat=True, normalize=True)
 
 mlp = MLP([784, 30, 10])
 train_errors = np.zeros(30)
