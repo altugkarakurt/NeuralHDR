@@ -51,7 +51,7 @@ class MLP:
 		return (layer_outputs, local_fields)
 
 
-	def train(self, data, labels, epochs, block_size, learn_rate):
+	def train(self, data, labels, epochs, block_size, learn_rate, savename):
 		data = [np.array(datum) for datum in data]
 		training_data = [list(i) for i in zip(data, labels)]
 		training_size = len(training_data)
@@ -62,7 +62,8 @@ class MLP:
 			
 			for block_idx, block in enumerate(blocks):
 				self.train_block(block, learn_rate)
-				print("Block %d/%d of Epoch %d complete.\n" % (block_idx + 1, len(blocks), epoch + 1))
+				np.save(savename, np.array(self.weights))
+				# print("Block %d/%d completed.\n" % (block_idx + 1, len(blocks)))
 
 
 	def train_block(self, block, learn_rate):
@@ -94,4 +95,19 @@ class MLP:
 						sum([self.weights[layer + 1][w][neuron] *  local_gradient[layer + 1][w] \
 							for w in range(self.sizes[layer + 1])])
 		
-		return [np.multiply(*np.meshgrid(layer_inputs[i], local_gradient[i])) for i in range(len(self.sizes))];
+		return [np.multiply(*np.meshgrid(layer_inputs[i], local_gradient[i])) for i in range(len(self.sizes))]
+
+	def validate(self, data, labels):
+		data = [np.array(datum) for datum in data]
+		training_data = [list(i) for i in zip(data, labels)]
+		training_size = len(training_data)
+		
+		accuracy = 0 
+
+		for sample, label in training_data:
+			y_est = self.estimate(sample)
+			if np.argmax(y_est) == np.argmax(label):
+				accuracy += 1
+
+		return accuracy / training_size
+
