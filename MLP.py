@@ -94,4 +94,4 @@ class MLP:
 						sum([self.weights[layer + 1][w][neuron] *  local_gradient[layer + 1][w] \
 							for w in range(self.sizes[layer + 1])])
 		
-		return [np.multiply(*np.meshgrid(a[i], b[i])).T for i in range(len(self.sizes))];
+		return [np.multiply(*np.meshgrid(layer_inputs[i], local_gradient[i])) for i in range(len(self.sizes))];
