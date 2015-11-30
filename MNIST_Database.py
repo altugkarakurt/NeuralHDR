@@ -1,36 +1,33 @@
-import matplotlib.pyplot as plt
 import csv
 import numpy as np
-import sys
-from random import randint
 from zipfile import ZipFile
 import io
 
-def readData():
+def read_data_from_zip(csv_filename):
 	with ZipFile('./Data/Digit.zip') as data_zip:
-		data = data_zip.open('testDigit.csv')
+		data = data_zip.open(csv_filename)
 		data = io.TextIOWrapper(data)
 		reader = csv.reader(data)
 	
 		temp = np.array([[int(row[i]) for i in range(785)] for row in reader])
-		test_images = [[row[l*28+1:(l+1)*28+1] for l in range(28)] for row in temp]
-		test_labels = temp[:,0]
+		images = [[row[l*28+1:(l+1)*28+1] for l in range(28)] for row in temp]
+		labels = temp[:,0]
 		data.close()
-		
-		data = data_zip.open('trainDigit.csv')
-		data = io.TextIOWrapper(data)
-		reader = csv.reader(data)
-		
-		temp = np.array([[int(row[i]) for i in range(785)] for row in reader])
-		train_images = [[row[l*28+1:(l+1)*28+1] for l in range(28)] for row in temp]
-		train_labels = temp[:,0]
-		data.close()
-		
-	return (train_labels, train_images, test_labels, test_images)
+	return (images, labels)
+
+
+def read_data(setname):
+	if setname == 'test':
+		return read_data_from_zip('testDigit.csv')
+	elif setname == 'train':
+		return read_data_from_zip('trainDigit.csv')
+	else:
+		raise ValueError('Not a valid set name')
 
 
 class MNIST_Database:
-	(train_labels, train_images, test_labels, test_images) = readData()
+	(train_images, train_labels) = read_data('train')
+	(test_images, test_labels) = read_data('test')
 	
 	@staticmethod
 	def get(*index, setname=None, flat=False, normalize=False, decode=False):
@@ -45,7 +42,8 @@ class MNIST_Database:
 		elif setname == 'train':
 			img = [MNIST_Database.train_images[ind] for ind in index]
 		else:
-			img = None
+			raise ValueError('Not a valid set name')
+			
 		if flat:
 			img = np.reshape(img, [len(index), -1])
 		
@@ -61,7 +59,7 @@ class MNIST_Database:
 		elif setname == 'train':
 			lbl = [MNIST_Database.train_labels[ind] for ind in index]
 		else:
-			lbl = None
+			raise ValueError('Not a valid set name')
 		
 		if decode:
 			declbl = np.zeros((10))
