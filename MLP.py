@@ -32,7 +32,7 @@ class MLP:
 		return self.estimate(network_input)
 
 	def estimate(self, network_input):
-		return self.feed_forward(network_input)[0][-1][0]
+		return self.feed_forward(network_input)[0][-1]
 	
 	def feed_forward(self, network_input):
 		# consider the input as output of the 0th layer
@@ -53,7 +53,7 @@ class MLP:
 
 	def train(self, data, labels, epochs, block_size, learn_rate):
 		data = [np.array(datum) for datum in data]
-		training_data = list(zip(data, labels))
+		training_data = [list(i) for i in zip(data, labels)]
 		training_size = len(training_data)
 		
 		for epoch in range(epochs):
@@ -78,13 +78,20 @@ class MLP:
 	def back_propagation(self, data, label):
 		(layer_outputs, local_fields) = self.feed_forward(data)
 		layer_outputs = [np.concatenate(([1],layer_output)) for layer_output in layer_outputs]
-		network_output = self.estimate(data)
-		layer_inputs = [np.concatenate(([1], data))] + layer_outputs[:-1]
-		
-		d_error = d_MSE(label, network_output)
-		d_outputs = [self.d_activation_function(local_field) for local_field in local_fields]
-		d_fields = layer_inputs
+		layer_inputs = [np.concatenate(([1], data))] + layer_outputs[:-1]		
+		network_output = self.estimate(data)	
 
-		return [np.multiply(*np.meshgrid(local_fields[layer], layer_inputs[layer])).T \
-			for layer, neurons in enumerate(self.sizes)]
-	
+		d_outputs = [self.d_activation_function(local_field) for local_field in local_fields]		
+		local_gradient = np.array([np.zeros(int(size)) for size in self.sizes])
+		
+		for layer, layer_size in reversed(list(enumerate(self.sizes))):
+			for neuron in range(layer_size):
+			#	print("n%d of l%d\n" % (neuron, layer))
+				if layer == len(self.sizes) - 1:
+					local_gradient[layer][neuron] = d_outputs[layer][neuron] * d_MSE(label[neuron], network_output[neuron])
+				else:
+					local_gradient[layer][neuron] = d_outputs[layer][neuron] * \
+						sum([self.weights[layer + 1][w][neuron] *  local_gradient[layer + 1][w] \
+							for w in range(self.sizes[layer + 1])])
+		
+		return [np.multiply(*np.meshgrid(a[i], b[i])).T for i in range(len(self.sizes))];
