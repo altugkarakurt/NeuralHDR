@@ -1,5 +1,6 @@
 *.pyc
 *.npy
+*.npz
 Data/testDigit.csv
 Data/trainDigit.csv
 Data/Description.txt

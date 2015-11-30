@@ -2,6 +2,7 @@ import csv
 import numpy as np
 from zipfile import ZipFile
 import io
+import os.path
 
 def read_data_from_zip(csv_filename):
 	with ZipFile('./Data/Digit.zip') as data_zip:
@@ -17,13 +18,23 @@ def read_data_from_zip(csv_filename):
 
 
 def read_data(setname):
+	npz_filename = './Data/npz/' + setname + '.npz'
+	if os.path.exists(npz_filename):
+		with open(npz_filename, 'rb') as npz_file:
+			npz_vars = np.load(npz_file)
+			return (npz_vars['images'], npz_vars['labels'])
+	
 	if setname == 'test':
-		return read_data_from_zip('testDigit.csv')
+		(images, labels) = read_data_from_zip('testDigit.csv')
 	elif setname == 'train':
-		return read_data_from_zip('trainDigit.csv')
+		(images, labels) = read_data_from_zip('trainDigit.csv')
 	else:
 		raise ValueError('Not a valid set name')
-
+	
+	with open(npz_filename, 'wb') as npz_file:
+		np.savez(npz_file, images=images, labels=labels)
+	return (images, labels)
+	
 
 class MNIST_Database:
 	(train_images, train_labels) = read_data('train')
