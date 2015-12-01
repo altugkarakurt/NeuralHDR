@@ -51,7 +51,7 @@ class MLP:
 		return (layer_outputs, local_fields)
 
 
-	def train(self, data, labels, epochs, block_size, learn_rate, savename):
+	def train(self, data, labels, epochs=1, block_size=1, learn_rate=0.5, savename=None):
 		data = [np.array(datum) for datum in data]
 		training_data = [list(i) for i in zip(data, labels)]
 		training_size = len(training_data)
@@ -62,7 +62,9 @@ class MLP:
 			
 			for block_idx, block in enumerate(blocks):
 				self.train_block(block, learn_rate)
-				np.save(savename, np.array(self.weights))
+				
+				if savename is not None:
+					np.save(savename, np.array(self.weights))
 				# print("Block %d/%d completed.\n" % (block_idx + 1, len(blocks)))
 
 
