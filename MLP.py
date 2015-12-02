@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import time
 
 from numpy.random import randn
 from random import shuffle
@@ -31,8 +32,10 @@ class MLP:
 	def __call__(self, network_input):
 		return self.estimate(network_input)
 
+
 	def estimate(self, network_input):
 		return self.feed_forward(network_input)[0][-1]
+	
 	
 	def feed_forward(self, network_input):
 		# consider the input as output of the 0th layer
@@ -51,7 +54,7 @@ class MLP:
 		return (layer_outputs, local_fields)
 
 
-	def train(self, data, labels, epochs=1, block_size=1, learn_rate=0.5, savename=None):
+	def train(self, data, labels, epochs=1, block_size=1, learn_rate=0.5):
 		data = [np.array(datum) for datum in data]
 		training_data = [list(i) for i in zip(data, labels)]
 		training_size = len(training_data)
@@ -62,10 +65,7 @@ class MLP:
 			
 			for block_idx, block in enumerate(blocks):
 				self.train_block(block, learn_rate)
-				
-				if savename is not None:
-					np.save(savename, np.array(self.weights))
-				# print("Block %d/%d completed.\n" % (block_idx + 1, len(blocks)))
+			# print("Block %d/%d completed.\n" % (block_idx + 1, len(blocks)))
 
 
 	def train_block(self, block, learn_rate):
@@ -99,6 +99,7 @@ class MLP:
 		
 		return [np.multiply(*np.meshgrid(layer_inputs[i], local_gradient[i])) for i in range(len(self.sizes))]
 
+
 	def validate(self, data, labels):
 		data = [np.array(datum) for datum in data]
 		training_data = [list(i) for i in zip(data, labels)]
@@ -113,3 +114,9 @@ class MLP:
 
 		return accuracy / training_size
 
+		
+	def save_weights(self, filename="weights", timestamp=True):
+		if timestamp:
+			filename = time.strftime("%Y%d%m-%H%M%S-") + filename
+		filename += ".npy"
+		np.save(filename, np.array(self.weights))

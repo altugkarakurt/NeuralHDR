@@ -12,10 +12,11 @@ train_errors = np.zeros(30)
 test_errors = np.zeros(30)
 
 for epoch_idx in range(30):
-	mlp.train(train_samples, train_labels, epochs=1, block_size=10, learn_rate=3.0, savename=("epoch" + str(epoch_idx) + ".npy"))
+	mlp.train(train_samples, train_labels, epochs=1, block_size=10, learn_rate=3.0)
 	train_errors[epoch_idx] = mlp.validate(train_samples, train_labels) #training error
 	test_errors[epoch_idx] = mlp.validate(test_samples, test_labels) #test error
 	print("Epoch %d done!" % (epoch_idx))
 	print("Training Accuracy: %.2f" % (train_errors[epoch_idx]))
 	print("Test Accuracy: %.2f" % (test_errors[epoch_idx]))
 	print("------------------------------------")
+	mlp.save_weights("weights-%.2f-%.2f" % (train_errors[epoch_idx], test_errors[epoch_idx]))
