@@ -24,7 +24,7 @@ for epoch_idx in range(1, epoch_count):
 	mlp.train(train_samples, train_labels, epochs=1, block_size=1, learn_rate=1/epoch_idx)
 	train_errors[epoch_idx-1] = mlp.validate(train_samples, train_labels) #training error
 	test_errors[epoch_idx-1] = mlp.validate(test_samples, test_labels) #test error
-	print("Epoch %d done!" % (epoch_idx))
+	print(time.strftime("Epoch %d done at %Y%d%m-%H%M%S"))!" % (epoch_idx)))
 	print("Training Accuracy: %.2f" % (train_errors[epoch_idx-1]))
 	print("Test Accuracy: %.2f" % (test_errors[epoch_idx-1]))
 	print("")
