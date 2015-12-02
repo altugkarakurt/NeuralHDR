@@ -118,5 +118,6 @@ class MLP:
 	def save_weights(self, filename="weights", timestamp=True):
 		if timestamp:
 			filename = time.strftime("%Y%d%m-%H%M%S-") + filename
-		filename += ".npy"
+		filename = "./Weights/" + filename + ".npy"
+		
 		np.save(filename, np.array(self.weights))

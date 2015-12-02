@@ -1,22 +1,33 @@
 from MNIST_Database import MNIST_Database as MNIST
 import numpy as np
 from MLP import MLP
+import time
 
-train_labels = MNIST.label(*range(60000), setname='train', decode=True)
-train_samples = MNIST.image(*range(60000), setname='train', flat=True, normalize=True)
-test_labels = MNIST.label(*range(9000), setname='test', decode=True)
-test_samples = MNIST.image(*range(9000), setname='test', flat=True, normalize=True)
+train_count = 60000
+train_labels = MNIST.label(*range(train_count), setname='train', decode=True)
+train_samples = MNIST.image(*range(train_count), setname='train', flat=True, normalize=True)
+
+test_count = 9000
+test_labels = MNIST.label(*range(test_count), setname='test', decode=True)
+test_samples = MNIST.image(*range(test_count), setname='test', flat=True, normalize=True)
 
 mlp = MLP([784, 30, 10])
-train_errors = np.zeros(30)
-test_errors = np.zeros(30)
 
-for epoch_idx in range(30):
-	mlp.train(train_samples, train_labels, epochs=1, block_size=10, learn_rate=3.0)
-	train_errors[epoch_idx] = mlp.validate(train_samples, train_labels) #training error
-	test_errors[epoch_idx] = mlp.validate(test_samples, test_labels) #test error
+epoch_count = 10
+train_errors = np.zeros(epoch_count)
+test_errors = np.zeros(epoch_count)
+
+print(time.strftime("Began training at %Y%d%m-%H%M%S"))
+print()
+
+for epoch_idx in range(1, epoch_count):
+	mlp.train(train_samples, train_labels, epochs=1, block_size=1, learn_rate=1/epoch_idx)
+	train_errors[epoch_idx-1] = mlp.validate(train_samples, train_labels) #training error
+	test_errors[epoch_idx-1] = mlp.validate(test_samples, test_labels) #test error
 	print("Epoch %d done!" % (epoch_idx))
-	print("Training Accuracy: %.2f" % (train_errors[epoch_idx]))
-	print("Test Accuracy: %.2f" % (test_errors[epoch_idx]))
-	print("------------------------------------")
-	mlp.save_weights("weights-%.2f-%.2f" % (train_errors[epoch_idx], test_errors[epoch_idx]))
+	print("Training Accuracy: %.2f" % (train_errors[epoch_idx-1]))
+	print("Test Accuracy: %.2f" % (test_errors[epoch_idx-1]))
+	print("")
+	mlp.save_weights("weights-ep%d-%.2f-%.2f" % (epoch_idx, train_errors[epoch_idx-1], test_errors[epoch_idx-1]))
+	
+print(time.strftime("Ended training at %Y%d%m-%H%M%S"))
