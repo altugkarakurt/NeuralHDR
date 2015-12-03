@@ -105,13 +105,19 @@ class MLP:
 		training_data = [list(i) for i in zip(data, labels)]
 		training_size = len(training_data)
 		
+		confusion_matrix = np.zeros((10,10))
+
 		accuracy = 0 
 
 		for sample, label in training_data:
-			y_est = self.estimate(sample)
-			if np.argmax(y_est) == np.argmax(label):
+			y_est = np.argmax(self.estimate(sample))
+			y = np.argmax(label)
+			confusion_matrix[y][y_est] += 1
+			if y_est == y:
 				accuracy += 1
 
+		np.set_printoptions(suppress=True)
+		print(confusion_matrix)
 		return accuracy / training_size
 
 		
