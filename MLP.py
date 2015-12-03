@@ -23,12 +23,19 @@ class MLP:
 		# TODO: check whether bias, weight sizes are compatible with layer sizes
 		# Remember weights[layer][0] are the biases
 		self.sizes = np.array(sizes)
-		self.weights = np.array(weights) if weights is not None else [randn(y, x) for x, y in \
-			zip(np.concatenate(([sizes[0]], sizes[:-1])) + np.ones_like(sizes), sizes)]
 		self.activation_function = activation_function[0]
 		self.d_activation_function = activation_function[1]
-
-
+		
+		if weights is None:
+			self.weights = [randn(y, x) for x, y in \
+				zip(np.concatenate(([sizes[0]], sizes[:-1])) + np.ones_like(sizes), sizes)]
+		elif type(weights) is str:
+			self.load_weights(weights)
+		else:
+			self.weights = np.array(weights)
+		
+	
+	
 	def __call__(self, network_input):
 		return self.estimate(network_input)
 
@@ -127,3 +134,10 @@ class MLP:
 		filename = "./Weights/" + filename + ".npy"
 		
 		np.save(filename, np.array(self.weights))
+	
+	def load_weights(self, filename=None):
+		if filename is not None:
+			filename = "./Weights/" + filename + ".npy"
+			self.weights = np.load(filename)
+		raise ValueError('No filename given.')
+	
