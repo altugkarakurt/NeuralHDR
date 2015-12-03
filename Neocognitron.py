@@ -2,8 +2,6 @@ import numpy as np
 from random import randint
 from numpy.random import randn
 
-def sigmoid(x): return 1 / (1 + np.exp(-x))
-def d_sigmoid(x): return sigmoid(x) * (1 - sigmoid(x))
 def phi(x): return x if x > 0 else 0
 
 class CCell:
