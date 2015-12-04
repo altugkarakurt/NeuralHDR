@@ -2,7 +2,7 @@ import numpy as np
 import time
 import sys
 
-from MNIST_Database import MNIST_Database as MNIST
+from MNIST_Database import MNIST
 from MLP import MLP
 
 class Logger(object):
