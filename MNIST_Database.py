@@ -18,6 +18,17 @@ def read_data_from_zip(csv_filename):
 	return temp
 	
 
+def read_data_from_csv(csv_filename, labeled=True):
+	with open('./Data/' + csv_filename, 'rt') as data:
+		reader = csv.reader(data)
+		if labeled:
+			temp = [{'label':int(row[0]), 'image':np.reshape([int(pixel) for pixel in row[1:]], [28, 28])} for row in reader]
+		else:
+			temp = [{'label':None, 'image':np.reshape([int(pixel) for pixel in row], [28, 28])} for row in reader]
+		
+	return temp
+	
+
 def read_data(setname):
 	npz_directory = './Data/npz/'
 	npz_filename = npz_directory + setname + '.npz'
@@ -33,10 +44,12 @@ def read_data(setname):
 	except RuntimeError:
 		os.remove(npz_filename)
 	
-	csvfiles = {'test':'testDigit.csv', 'train':'trainDigit.csv'}
+	csvfiles = {'test':'testDigit.csv', 'train':'trainDigit.csv', 'demo':'demoDataset.csv'}
 	
 	if setname in ['test', 'train']:
 		data = read_data_from_zip(csvfiles[setname])
+	elif setname == 'demo':
+		data = read_data_from_csv(csvfiles[setname], labeled=False)
 	elif setname in MNIST.sets:
 		raise NotImplementedError('Set %s not implemented yet' % (setname))
 	else:
@@ -48,7 +61,7 @@ def read_data(setname):
 	
 
 class MNIST:
-	sets = ['train', 'test']
+	sets = ['train', 'test', 'demo']
 	data = {}
 	for setname in sets:
 		data[setname] = read_data(setname)
