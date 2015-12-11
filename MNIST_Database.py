@@ -34,7 +34,7 @@ def read_data(setname):
 	npz_filename = npz_directory + setname + '.npz'
 	
 	if not os.path.exists(npz_directory):
-	    os.makedirs(npz_directory)
+		os.makedirs(npz_directory)
 	
 	try:
 		if os.path.exists(npz_filename):
@@ -51,7 +51,7 @@ def read_data(setname):
 	elif setname == 'demo':
 		data = read_data_from_csv(csvfiles[setname], labeled=False)
 	elif setname in MNIST.sets:
-		raise NotImplementedError('Set %s not implemented yet' % (setname))
+		raise NotImplementedError('Set {} not implemented yet'.format(setname))
 	else:
 		raise ValueError('Invalid set name')
 	
@@ -93,7 +93,7 @@ class MNIST:
 				if flat:
 					sample['image'] = MNIST.flatten_image(sample['image'])
 				if normalize:
-					sample['image'] = MNIST.normalize_image(sample['image'])		
+					sample['image'] = MNIST.normalize_image(sample['image'])
 				if decode:
 					sample['label'] = MNIST.decode_label(sample['label'])
 		
@@ -116,3 +116,5 @@ class MNIST:
 		if type(samples) is list:
 			return [sample['label'] for sample in samples]
 		return samples['label']
+	
+
