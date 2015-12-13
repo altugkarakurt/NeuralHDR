@@ -1,18 +1,18 @@
 import numpy as np
-from random import randint
-from numpy.random import randn
 
 def phi(x): return x if x > 0 else 0
 
 class SCell:
-	def __init__(self, weights, r=None):
-		self.r = r if r is not None else randn()
-		self.weights = weights
+	def __init__(self, a, b, r, sigma):
+		self.r = r
+		self.a = a
+		self.b = b
+		self.sigma = sigma
 
-	def feed_forward(self, window_in, v_in, inhibit):
-		# window_in: input window vector
-		# v_n:		  input fed from preceding v-cell
-		# inhibit:   inhibitory weight from V cell  
+	def feed_forward(self, u_cl, u_vl):
+		numerator = self.sigma + np.dot(np.reshape(self.a, [-1]), np.reshape(u_cl, [-1]))
+		denom = self.sigma + (self.r/(1+self.r) * self.b * u_vl)
+		return phi((numerator/denom) - 1) * self.r
 
-		temp = (1 + (self.weights @ window_in)) / (1 + 2 * self.r / (1+self.r) * inhibit * v_in) - 1
-		return r * phi(temp)
+
+		
