@@ -87,22 +87,21 @@ class MNIST:
 		return decoded
 	
 	@staticmethod
-	def get(*indices, setname='train', flat=False, normalize=False, decode=False, resize=False):
+	def get(*indices, setname='train', **kwargs):
 		if setname not in MNIST.sets:
 			raise ValueError('Invalid set name')
 		
 		samples = [deepcopy(MNIST.data[setname][index]) for index in indices]
 		
-		if flat or normalize or decode or resize:
-			for sample in samples:
-				if resize:
-					sample['image'] = MNIST.resize_image(sample['image'], scale=resize)
-				if flat:
-					sample['image'] = MNIST.flatten_image(sample['image'])
-				if normalize:
-					sample['image'] = MNIST.normalize_image(sample['image'])
-				if decode:
-					sample['label'] = MNIST.decode_label(sample['label'])
+		for sample in samples:
+			if kwargs.get('resize', False):
+				sample['image'] = MNIST.resize_image(sample['image'], scale=kwargs['resize'])
+			if kwargs.get('flat', False):
+				sample['image'] = MNIST.flatten_image(sample['image'])
+			if kwargs.get('normalize', False):
+				sample['image'] = MNIST.normalize_image(sample['image'])
+			if kwargs.get('decode', False):
+				sample['label'] = MNIST.decode_label(sample['label'])
 		
 		if len(samples) == 1:
 			return samples[0]
