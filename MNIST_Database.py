@@ -59,13 +59,16 @@ def read_data(setname):
 	with open(npz_filename, 'wb') as npz_file:
 		np.savez(npz_file, dataset=data)
 	return data
-	
-
+ 
 class MNIST:
 	sets = ['train', 'test', 'demo']
 	data = {}
 	for setname in sets:
 		data[setname] = read_data(setname)
+	
+	groups = [[],[],[],[],[],[],[],[],[],[]]
+	for sample in data['train']:
+		groups[sample['label']].append(sample["image"])
 	
 	@staticmethod
 	def flatten_image(img):
@@ -122,5 +125,11 @@ class MNIST:
 		if type(samples) is list:
 			return [sample['label'] for sample in samples]
 		return samples['label']
-	
-
+ 
+	@staticmethod
+	def bootstrap(label=None):
+		label = np.random.randint(0, 10) if label is None else label
+		count = np.shape(MNIST.groups[label])[0]
+		indices = np.reshape([np.random.randint(0, count) for _ in range(784)], [28, 28])
+		image = np.array([[MNIST.groups[label][indices[i][j]][j][i] for i in range(28)] for j in range(28)])
+		return {'label':label, 'image':image}
