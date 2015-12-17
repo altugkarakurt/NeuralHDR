@@ -4,6 +4,7 @@ from zipfile import ZipFile
 import io
 import os
 from copy import deepcopy
+from PIL import Image
 
 def read_data_from_zip(csv_filename):
 	with ZipFile('./Data/Digit.zip') as data_zip:
@@ -76,20 +77,26 @@ class MNIST:
 			* (np.max(scale) - np.min(scale)) + np.min(scale)
 	
 	@staticmethod
+	def resize_image(img, scale=(28, 28)):
+		return np.array(Image.frombytes('L', (28,28), np.uint8(img)).resize(scale))
+	
+	@staticmethod
 	def decode_label(lbl):
 		decoded = np.zeros([10])
 		decoded[lbl] = 1
 		return decoded
 	
 	@staticmethod
-	def get(*indices, setname='train', flat=False, normalize=False, decode=False):
+	def get(*indices, setname='train', flat=False, normalize=False, decode=False, resize=False):
 		if setname not in MNIST.sets:
 			raise ValueError('Invalid set name')
 		
 		samples = [deepcopy(MNIST.data[setname][index]) for index in indices]
 		
-		if flat or normalize or decode:
+		if flat or normalize or decode or resize:
 			for sample in samples:
+				if resize:
+					sample['image'] = MNIST.resize_image(sample['image'], scale=resize)
 				if flat:
 					sample['image'] = MNIST.flatten_image(sample['image'])
 				if normalize:
