@@ -78,7 +78,7 @@ class MNIST:
 	
 	@staticmethod
 	def resize_image(img, scale=(28, 28)):
-		return np.array(Image.frombytes('L', (28,28), np.uint8(img)).resize(scale))
+		return np.array(Image.fromarray(np.uint8(img)).resize(scale))
 	
 	@staticmethod
 	def decode_label(lbl):
