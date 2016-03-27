@@ -19,7 +19,7 @@ def cross_entropy(y, y_est): return (y * ln(y_est) + (1 - y) * ln(1 - y_est)) / 
 
 class MLP:
 
-	def __init__(self, sizes, activation_function=(sigmoid, d_sigmoid), weights=None):
+	def __init__(self, input_size, sizes, activation_function=(sigmoid, d_sigmoid), weights=None):
 		# TODO: check whether bias, weight sizes are compatible with layer sizes
 		# Remember weights[layer][0] are the biases
 		self.sizes = np.array(sizes)
@@ -28,7 +28,7 @@ class MLP:
 		
 		if weights is None:
 			self.weights = [randn(y, x) for x, y in \
-				zip(np.concatenate(([sizes[0]], sizes[:-1])) + np.ones_like(sizes), sizes)]
+				zip(np.concatenate(([input_size], sizes[:-1])) + np.ones_like(sizes), sizes)]
 		elif type(weights) is str:
 			self.load_weights(weights)
 		else:
@@ -139,5 +139,6 @@ class MLP:
 		if filename is not None:
 			filename = "./Weights/" + filename + ".npy"
 			self.weights = np.load(filename)
-		raise ValueError('No filename given.')
+		else:
+			raise ValueError('No filename given.')
 	

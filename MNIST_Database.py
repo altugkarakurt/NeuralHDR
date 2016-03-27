@@ -45,7 +45,7 @@ def read_data(setname):
 	except RuntimeError:
 		os.remove(npz_filename)
 	
-	csvfiles = {'test':'testDigit.csv', 'train':'trainDigit.csv', 'demo':'demoDataset.csv'}
+	csvfiles = {'test':'testDigit.csv', 'train':'trainDigit.csv', 'demo':'demoDigit.csv'}
 	
 	if setname in ['test', 'train']:
 		data = read_data_from_zip(csvfiles[setname])
@@ -61,7 +61,7 @@ def read_data(setname):
 	return data
  
 class MNIST:
-	sets = ['train', 'test', 'demo']
+	sets = ['train', 'test', 'demo', 'actdemo']
 	data = {}
 	for setname in sets:
 		data[setname] = read_data(setname)
@@ -84,6 +84,10 @@ class MNIST:
 		return np.array(Image.fromarray(np.uint8(img)).resize(scale))
 	
 	@staticmethod
+	def bilevel_image(img, treshold=128):
+		return np.max(img) * (img > treshold)
+	
+	@staticmethod
 	def decode_label(lbl):
 		decoded = np.zeros([10])
 		decoded[lbl] = 1
@@ -99,6 +103,8 @@ class MNIST:
 		for sample in samples:
 			if kwargs.get('resize', False):
 				sample['image'] = MNIST.resize_image(sample['image'], scale=kwargs['resize'])
+			if kwargs.get('bilevel', False):
+				sample['image'] = MNIST.bilevel_image(sample['image'])
 			if kwargs.get('flat', False):
 				sample['image'] = MNIST.flatten_image(sample['image'])
 			if kwargs.get('normalize', False):

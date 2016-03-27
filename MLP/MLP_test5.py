@@ -23,11 +23,11 @@ from MLP import MLP
 
 train_count = 60000
 train_labels = MNIST.label(*range(train_count), setname='train', decode=True)
-train_samples = MNIST.image(*range(train_count), setname='train', flat=True, normalize=True)
+train_samples = MNIST.image(*range(train_count), setname='train', flat=True, normalize=True, bilevel=True)
 
 test_count = 9000
 test_labels = MNIST.label(*range(test_count), setname='test', decode=True)
-test_samples = MNIST.image(*range(test_count), setname='test', flat=True, normalize=True)
+test_samples = MNIST.image(*range(test_count), setname='test', flat=True, normalize=True, bilevel=True)
 
 mlp = MLP(784, [30, 10])
 
@@ -43,17 +43,17 @@ for epoch_idx in range(1, epoch_count+1):
 	mlp.train(train_samples, train_labels, epochs=1, block_size=1, learn_rate=2/epoch_idx)
 	train_errors[epoch_idx-1] = mlp.validate(train_samples, train_labels) #training error
 	test_errors[epoch_idx-1] = mlp.validate(test_samples, test_labels) #test error
-	print("Epoch %d done at " % (epoch_idx) + time.strftime("%Y%m%d-%H%M%S"))
-	print("Training Accuracy: %.4f" % (train_errors[epoch_idx-1]))
-	print("Test Accuracy: %.4f" % (test_errors[epoch_idx-1]))
+	print("1510 Epoch %d done at " % (epoch_idx) + time.strftime("%Y%m%d-%H%M%S"))
+	print("1510 Training Accuracy: %.4f" % (train_errors[epoch_idx-1]))
+	print("1510 Test Accuracy: %.4f" % (test_errors[epoch_idx-1]))
 	print("")
-	mlp.save_weights("weights-ep%d-%.4f-%.4f" % (epoch_idx, train_errors[epoch_idx-1], test_errors[epoch_idx-1]))
+	mlp.save_weights("weights-1510-ep%d-%.4f-%.4f" % (epoch_idx, train_errors[epoch_idx-1], test_errors[epoch_idx-1]))
 
 end_time = time.time()
 print(time.strftime("Ended training at %Y%m%d-%H%M%S"))
 
 delta = end_time - begin_time
-print("Overall, lasted %d hours %d minutes %d seconds" % (delta/3600, (delta/60)%60, delta%60));
+print("Overall, 1510 lasted %d hours %d minutes %d seconds" % (delta/3600, (delta/60)%60, delta%60));
 
 # sys.stdout.flush()
 # sys.stdout = sys.stdout.terminal

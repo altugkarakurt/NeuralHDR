@@ -22,8 +22,7 @@ from MLP import MLP
 # sys.stdout = Logger()
 
 train_count = 60000
-train_labels = MNIST.label(*range(train_count), setname='train', decode=True)
-train_samples = MNIST.image(*range(train_count), setname='train', flat=True, normalize=True)
+
 
 test_count = 9000
 test_labels = MNIST.label(*range(test_count), setname='test', decode=True)
@@ -40,20 +39,24 @@ print(time.strftime("Began training at %Y%m%d-%H%M%S"))
 print()
 
 for epoch_idx in range(1, epoch_count+1):
-	mlp.train(train_samples, train_labels, epochs=1, block_size=1, learn_rate=2/epoch_idx)
-	train_errors[epoch_idx-1] = mlp.validate(train_samples, train_labels) #training error
+	bootstrap_data = [MNIST.bootstrap() for _ in range(train_count)]
+	bootstrap_labels = [MNIST.decode_label(sample['label']) for sample in bootstrap_data]
+	bootstrap_samples = [MNIST.flatten_image(MNIST.normalize_image(sample['image'])) for sample in bootstrap_data]
+	
+	mlp.train(bootstrap_samples, bootstrap_labels, epochs=1, block_size=1, learn_rate=2/epoch_idx)
+	train_errors[epoch_idx-1] = mlp.validate(bootstrap_samples, bootstrap_labels) #training error
 	test_errors[epoch_idx-1] = mlp.validate(test_samples, test_labels) #test error
-	print("Epoch %d done at " % (epoch_idx) + time.strftime("%Y%m%d-%H%M%S"))
-	print("Training Accuracy: %.4f" % (train_errors[epoch_idx-1]))
-	print("Test Accuracy: %.4f" % (test_errors[epoch_idx-1]))
+	print("Bs Epoch %d done at " % (epoch_idx) + time.strftime("%Y%m%d-%H%M%S"))
+	print("Bs Training Accuracy: %.4f" % (train_errors[epoch_idx-1]))
+	print("Bs Test Accuracy: %.4f" % (test_errors[epoch_idx-1]))
 	print("")
-	mlp.save_weights("weights-ep%d-%.4f-%.4f" % (epoch_idx, train_errors[epoch_idx-1], test_errors[epoch_idx-1]))
+	mlp.save_weights("weights-bs-ep%d-%.4f-%.4f" % (epoch_idx, train_errors[epoch_idx-1], test_errors[epoch_idx-1]))
 
 end_time = time.time()
-print(time.strftime("Ended training at %Y%m%d-%H%M%S"))
+print(time.strftime("Bs Ended training at %Y%m%d-%H%M%S"))
 
 delta = end_time - begin_time
-print("Overall, lasted %d hours %d minutes %d seconds" % (delta/3600, (delta/60)%60, delta%60));
+print("Overall, Bs lasted %d hours %d minutes %d seconds" % (delta/3600, (delta/60)%60, delta%60));
 
 # sys.stdout.flush()
 # sys.stdout = sys.stdout.terminal
